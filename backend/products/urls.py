@@ -1,7 +1,8 @@
 from rest_framework.urls import path
 
-from .views import ProductDetailView
+from .views import ProductDetailAPIView, ProductListCreateAPIView
 
 urlpatterns = [
-    path("<int:pk>/", ProductDetailView.as_view())
+    path('', ProductListCreateAPIView.as_view()),
+    path("<int:pk>/", ProductDetailAPIView.as_view()),
 ]
