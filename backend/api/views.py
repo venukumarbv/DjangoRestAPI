@@ -1,4 +1,6 @@
 import json
+from logging import raiseExceptions
+
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
 
@@ -27,3 +29,12 @@ def api_home(request, *args, **kwargs):
         data = ProductSerializer(instance).data  # Model serializer way .data is important
     return Response(data)   # DRF way
     # return JsonResponse(data)
+
+
+
+# @api_view(["POST"])
+# def api_home(request, *args, **kwargs):
+#     serializer = ProductSerializer(data=request.data)
+#     if serializer.is_valid(raise_exception=True):
+#         print(serializer.data)
+#         return Response(serializer.data)
