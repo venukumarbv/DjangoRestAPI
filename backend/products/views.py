@@ -1,7 +1,8 @@
-from rest_framework import generics
+from rest_framework import generics, permissions, authentication
 
 from .models import Product
 from .serializers import ProductSerializer
+from api.authentication import TokenAuthentication
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     """
@@ -14,6 +15,12 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    authentication_classes = [
+        authentication.SessionAuthentication,
+        # authentication.TokenAuthentication,
+        TokenAuthentication, # The overridden to have 'Bearer' Keyword
+    ]
+    permission_classes = [permissions.DjangoModelPermissions ]
 
     # Might set an attribute(here "Content") on the object based on the request user
     def perform_create(self, serializer):
