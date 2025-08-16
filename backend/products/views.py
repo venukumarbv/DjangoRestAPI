@@ -1,6 +1,7 @@
 from rest_framework import generics, permissions, authentication
 
 from .models import Product
+from .permissions import IsStaffEditorPermission
 from .serializers import ProductSerializer
 from api.authentication import TokenAuthentication
 
@@ -15,12 +16,14 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [
-        authentication.SessionAuthentication,
-        # authentication.TokenAuthentication,
-        TokenAuthentication, # The overridden to have 'Bearer' Keyword
-    ]
-    permission_classes = [permissions.DjangoModelPermissions ]
+    # Removed authentication classes here since it is handled as a  default authentication
+    # Defined in the settings.py file
+    # authentication_classes = [
+    #     authentication.SessionAuthentication,
+    #     # authentication.TokenAuthentication,
+    #     TokenAuthentication, # The overridden to have 'Bearer' Keyword
+    # ]
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission ]
 
     # Might set an attribute(here "Content") on the object based on the request user
     def perform_create(self, serializer):
@@ -38,12 +41,14 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     # print(Product.objects.all())
     serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
 
 class ProductUpdateAPIView(generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def perform_update(self, serializer):
         instance = serializer.save()
@@ -56,6 +61,7 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def perform_destroy(self, instance):
         super().perform_destroy(instance)
