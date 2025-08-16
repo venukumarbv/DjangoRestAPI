@@ -1,11 +1,13 @@
-from rest_framework import generics, permissions, authentication
+from rest_framework import generics, permissions
 
 from .models import Product
-from .permissions import IsStaffEditorPermission
 from .serializers import ProductSerializer
-from api.authentication import TokenAuthentication
+from api.mixins import StaffEditorPermissionMixin
 
-class ProductListCreateAPIView(generics.ListCreateAPIView):
+class ProductListCreateAPIView(
+    StaffEditorPermissionMixin,
+    generics.ListCreateAPIView
+):
     """
     If GET method -> It lists the objects
     If POST method -> It Creates the objects
@@ -23,7 +25,9 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     #     # authentication.TokenAuthentication,
     #     TokenAuthentication, # The overridden to have 'Bearer' Keyword
     # ]
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission ]
+
+    # Permission classes are handled with StaffEditorPermissionMixins
+    # permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission ]
 
     # Might set an attribute(here "Content") on the object based on the request user
     def perform_create(self, serializer):
@@ -37,18 +41,24 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
         serializer.save(content=content)
 
 
-class ProductDetailAPIView(generics.RetrieveAPIView):
+class ProductDetailAPIView(
+    StaffEditorPermissionMixin,
+    generics.RetrieveAPIView
+):
     queryset = Product.objects.all()
     # print(Product.objects.all())
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
+    # permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
 
-class ProductUpdateAPIView(generics.UpdateAPIView):
+class ProductUpdateAPIView(
+StaffEditorPermissionMixin,
+    generics.UpdateAPIView
+):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
+    # permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def perform_update(self, serializer):
         instance = serializer.save()
@@ -57,11 +67,14 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
             ##
 
 
-class ProductDestroyAPIView(generics.DestroyAPIView):
+class ProductDestroyAPIView(
+StaffEditorPermissionMixin,
+    generics.DestroyAPIView
+):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
+    # permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def perform_destroy(self, instance):
         super().perform_destroy(instance)
